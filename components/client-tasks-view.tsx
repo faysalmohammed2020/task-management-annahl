@@ -1,10 +1,7 @@
 //app/components/client-tasks-view.tsx
 
-//app/components/client-tasks-view.tsx
-
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { useState, useEffect, useCallback } from "react";
 import {
   Card,
@@ -12,12 +9,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
@@ -25,12 +19,8 @@ import {
   Clock,
   Play,
   Pause,
-  Play,
-  Pause,
   CheckCircle,
   AlertCircle,
-  XCircle,
-  Search,
   XCircle,
   Search,
   Timer,
@@ -59,7 +49,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2,Grid3X3 } from "lucide-react";
 import { DriveImageGallery } from "./drive-image-gallery";
 
-// Import all the existing interfaces and components from the original dashboard
 // Import all the existing interfaces and components from the original dashboard
 interface Task {
   id: string;
@@ -149,14 +138,6 @@ interface GlobalTimerLock {
   taskId: string | null;
   agentId: string | null;
   taskName: string | null;
-  startedAt?: number; // Added timestamp for accurate tracking
-}
-
-interface GlobalTimerLock {
-  isLocked: boolean;
-  taskId: string | null;
-  agentId: string | null;
-  taskName: string | null;
 }
 
 interface ClientTasksViewProps {
@@ -166,15 +147,6 @@ interface ClientTasksViewProps {
   onBack: () => void;
 }
 
-interface Agent {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  role: string;
-}
-
-// Utility Functions
 interface Agent {
   id: string;
   name: string;
@@ -196,23 +168,9 @@ const formatTimerDisplay = (seconds: number): string => {
   return `${minutes.toString().padStart(2, "0")}:${secs
     .toString()
     .padStart(2, "0")}`;
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  if (hours > 0) {
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  }
-  return `${minutes.toString().padStart(2, "0")}:${secs
-    .toString()
-    .padStart(2, "0")}`;
 };
 
 const formatDuration = (minutes: number): string => {
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
   if (minutes < 60) {
     return `${minutes}m`;
   }
@@ -222,7 +180,6 @@ const formatDuration = (minutes: number): string => {
 };
 
 // Badge Components
-// Badge Components
 const getStatusBadge = (status: string) => {
   const statusConfig = {
     pending: {
@@ -230,13 +187,11 @@ const getStatusBadge = (status: string) => {
         "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800/50 dark:text-slate-400 border-slate-300 dark:border-slate-700",
       icon: Clock,
       label: "Pending", // Neutral
-      label: "Pending", // Neutral
     },
     in_progress: {
       className:
         "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 border-blue-300 dark:border-blue-800",
       icon: Play,
-      label: "In Progress", // Blue = action
       label: "In Progress", // Blue = action
     },
     completed: {
@@ -244,13 +199,11 @@ const getStatusBadge = (status: string) => {
         "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800",
       icon: CheckCircle,
       label: "Completed", // Emerald = success/done
-      label: "Completed", // Emerald = success/done
     },
     qc_approved: {
       className:
         "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 border-purple-300 dark:border-purple-800",
       icon: ShieldCheck,
-      label: "QC Approved", // Purple = authority/trust (distinct from green)
       label: "QC Approved", // Purple = authority/trust (distinct from green)
     },
     overdue: {
@@ -258,13 +211,11 @@ const getStatusBadge = (status: string) => {
         "bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 border-red-300 dark:border-red-800",
       icon: AlertCircle,
       label: "Overdue", // Red = critical
-      label: "Overdue", // Red = critical
     },
     cancelled: {
       className:
         "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 border-gray-300 dark:border-gray-700",
       icon: XCircle,
-      label: "Cancelled", // Gray = inactive
       label: "Cancelled", // Gray = inactive
     },
     reassigned: {
@@ -272,11 +223,8 @@ const getStatusBadge = (status: string) => {
         "bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400 border-amber-300 dark:border-amber-800",
       icon: RefreshCw,
       label: "Reassigned", // Amber = change/attention
-      label: "Reassigned", // Amber = change/attention
     },
   };
-
-  const config = statusConfig[status as keyof typeof statusConfig];
 
   const config = statusConfig[status as keyof typeof statusConfig];
   if (!config) return <Badge variant="secondary">{status}</Badge>;
@@ -312,7 +260,6 @@ const getPriorityBadge = (priority: string) => {
     },
   };
   const config = priorityConfig[priority as keyof typeof priorityConfig];
-  const config = priorityConfig[priority as keyof typeof priorityConfig];
   if (!config) return <Badge variant="secondary">{priority}</Badge>;
   return <Badge className={config.className}>{config.label}</Badge>;
 };
@@ -327,21 +274,12 @@ export function ClientTasksView({
   onBack,
 }: ClientTasksViewProps) {
   // State management
-  // State management
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
-  const [timerState, setTimerState] = useState<TimerState | null>(null);
-  const [globalTimerLock, setGlobalTimerLock] = useState<GlobalTimerLock>({
-    isLocked: false,
-    taskId: null,
-    agentId: null,
-    taskName: null,
-  });
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [timerState, setTimerState] = useState<TimerState | null>(null);
   const [globalTimerLock, setGlobalTimerLock] = useState<GlobalTimerLock>({
@@ -362,7 +300,6 @@ export function ClientTasksView({
   });
 
   // Dialog states
-  // Dialog states
   const [isCompletionConfirmOpen, setIsCompletionConfirmOpen] = useState(false);
   const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
   const [completionLink, setCompletionLink] = useState("");
@@ -370,9 +307,6 @@ export function ClientTasksView({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
-  // Add these state variables after the existing ones
-  const [isBulkCompletionOpen, setIsBulkCompletionOpen] = useState(false);
-  const [bulkCompletionLink, setBulkCompletionLink] = useState("");
   // Add these state variables after the existing ones
   const [isBulkCompletionOpen, setIsBulkCompletionOpen] = useState(false);
   const [bulkCompletionLink, setBulkCompletionLink] = useState("");
@@ -386,7 +320,6 @@ export function ClientTasksView({
   const [loadingAgents, setLoadingAgents] = useState(false);
 
   // API Functions
-  // API Functions
   const fetchClientTasks = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -394,13 +327,10 @@ export function ClientTasksView({
       // Fetch client data with imageDrivelink from the agent route
       const agentResponse = await fetch(`/api/tasks/clients/agents/${agentId}`);
       if (!agentResponse.ok) {
-      if (!agentResponse.ok) {
         throw new Error(`HTTP error! status: ${agentResponse.status}`);
-      }
       }
       const agentData = await agentResponse.json();
 
-      // Find the current client in the agent's clients
       // Find the current client in the agent's clients
       const currentClient = agentData.find(
         (client: any) => client.id === clientId
@@ -408,26 +338,18 @@ export function ClientTasksView({
       if (currentClient) {
         setClientData(currentClient);
       }
-      if (currentClient) {
-        setClientData(currentClient);
-      }
 
-      // Fetch tasks for this specific client
       // Fetch tasks for this specific client
       const response = await fetch(`/api/tasks/client/${clientId}`);
       if (!response.ok) {
-      if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
       }
       const data: Task[] = await response.json();
 
       // Filter tasks for this specific agent
-      // Filter tasks for this specific agent
       const agentTasks = data.filter((task) => task.assignedTo?.id === agentId);
       setTasks(agentTasks);
 
-      // Calculate stats with proper overdue detection
       // Calculate stats with proper overdue detection
       const now = new Date();
       const stats = {
@@ -472,21 +394,7 @@ export function ClientTasksView({
           },
           body: JSON.stringify({ taskId, ...updates }),
         });
-      try {
-        const response = await fetch(`/api/tasks/agents/${agentId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ taskId, ...updates }),
-        });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(
-            errorData.message || `HTTP error! status: ${response.status}`
-          );
-        }
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
@@ -502,20 +410,7 @@ export function ClientTasksView({
             task.id === taskId ? { ...task, ...updatedTask } : task
           )
         );
-        const updatedTask = await response.json();
 
-        // Update local state with the response from server
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === taskId ? { ...task, ...updatedTask } : task
-          )
-        );
-
-        return updatedTask;
-      } catch (err: any) {
-        console.error("Failed to update task:", err);
-        throw err;
-      }
         return updatedTask;
       } catch (err: any) {
         console.error("Failed to update task:", err);
@@ -637,34 +532,7 @@ export function ClientTasksView({
       const task = tasks.find((t) => t.id === taskId);
       if (!task?.idealDurationMinutes) return;
 
-
       try {
-        // Update task status to in_progress when starting timer
-        await handleUpdateTask(taskId, { status: "in_progress" });
-
-        const existingTimer = timerState?.taskId === taskId ? timerState : null;
-        // FIX: minutes -> seconds
-        const totalSeconds = task.idealDurationMinutes * 60;
-
-        const remainingSeconds =
-          existingTimer?.remainingSeconds ?? totalSeconds;
-
-        const newTimer: TimerState = {
-          taskId,
-          remainingSeconds,
-          isRunning: true,
-          totalSeconds,
-          isGloballyLocked: true,
-          lockedByAgent: agentId,
-          startedAt: Date.now(),
-        };
-
-        setTimerState(newTimer);
-        saveTimerToStorage(newTimer);
-        toast.success(
-          `Timer started for "${task.name}". Back to clients navigation is now disabled.`
-        );
-      } catch (error) {
         // Update task status to in_progress when starting timer
         await handleUpdateTask(taskId, { status: "in_progress" });
 
@@ -694,14 +562,6 @@ export function ClientTasksView({
         toast.error("Failed to start timer");
       }
     },
-    [
-      tasks,
-      timerState,
-      saveTimerToStorage,
-      handleUpdateTask,
-      globalTimerLock,
-      agentId,
-    ]
     [
       tasks,
       timerState,
@@ -758,50 +618,6 @@ export function ClientTasksView({
   );
 
   // Update the handleTaskCompletion function to properly calculate overtime duration
-      if (timerState?.taskId === taskId) {
-        const updatedTimer = {
-          ...timerState,
-          isRunning: false,
-          isGloballyLocked: false,
-        };
-        setTimerState(updatedTimer);
-        saveTimerToStorage(updatedTimer);
-
-        const task = tasks.find((t) => t.id === taskId);
-        toast.info(
-          `Timer paused for "${task?.name}". All tasks are now unlocked.`
-        );
-      }
-    },
-    [timerState, tasks, saveTimerToStorage]
-  );
-
-  const handleResetTimer = useCallback(
-    (taskId: string) => {
-      if (timerState?.taskId === taskId) {
-        const task = tasks.find((t) => t.id === taskId);
-        if (!task?.idealDurationMinutes) return;
-
-        const totalSeconds = task.idealDurationMinutes * 60;
-        const updatedTimer: TimerState = {
-          taskId,
-          remainingSeconds: totalSeconds,
-          isRunning: false,
-          totalSeconds,
-          isGloballyLocked: false,
-        };
-        setTimerState(updatedTimer);
-        saveTimerToStorage(null); // Clear global lock when resetting
-
-        toast.info(
-          `Timer reset for "${task?.name}". All tasks are now unlocked.`
-        );
-      }
-    },
-    [timerState, tasks, saveTimerToStorage]
-  );
-
-  // Update the handleTaskCompletion function to properly calculate overtime duration
   const handleTaskCompletion = useCallback(async () => {
     if (!taskToComplete) return;
 
@@ -813,31 +629,23 @@ export function ClientTasksView({
         taskToComplete.idealDurationMinutes
       ) {
         // Calculate actual time used based on timer state
-        // Calculate actual time used based on timer state
         const totalTimeUsedSeconds =
           timerState.totalSeconds - timerState.remainingSeconds;
         actualDurationMinutes = Math.ceil(totalTimeUsedSeconds / 60);
 
         // Ensure minimum of 1 minute if any time was used
         if (actualDurationMinutes < 1 && totalTimeUsedSeconds > 0) {
-
-        // Ensure minimum of 1 minute if any time was used
-        if (actualDurationMinutes < 1 && totalTimeUsedSeconds > 0) {
           actualDurationMinutes = 1;
         }
-        }
 
-        // Enhanced completion feedback with precise timing
         // Enhanced completion feedback with precise timing
         const idealMinutes = taskToComplete.idealDurationMinutes;
         const actualMinutes = actualDurationMinutes;
 
         if (timerState.remainingSeconds <= 0) {
           // Task went overtime
-          // Task went overtime
           const overtimeSeconds = Math.abs(timerState.remainingSeconds);
           const overtimeDisplay = formatTimerDisplay(overtimeSeconds);
-
 
           toast.success(
             `Task "${taskToComplete.name}" completed with overtime!`,
@@ -851,7 +659,6 @@ export function ClientTasksView({
             }
           );
         } else {
-          // Task completed within time
           // Task completed within time
           const savedTime = formatTimerDisplay(timerState.remainingSeconds);
           toast.success(
@@ -875,22 +682,7 @@ export function ClientTasksView({
 
       // Add completion details if provided
       if (completionLink?.trim()) {
-      // Add completion details if provided
-      if (completionLink?.trim()) {
         updates.completionLink = completionLink.trim();
-      }
-      if (username?.trim()) {
-        updates.username = username.trim();
-      }
-      if (email?.trim()) {
-        updates.email = email.trim();
-      }
-      if (password?.trim()) {
-        updates.password = password;
-      }
-
-      // Update actual duration
-      if (typeof actualDurationMinutes === "number") {
       }
       if (username?.trim()) {
         updates.username = username.trim();
@@ -906,26 +698,11 @@ export function ClientTasksView({
       if (typeof actualDurationMinutes === "number") {
         updates.actualDurationMinutes = actualDurationMinutes;
       }
-      }
 
       await handleUpdateTask(taskToComplete.id, updates);
 
       // Update local state
-      // Update local state
       setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskToComplete.id
-            ? { ...task, ...updates, actualDurationMinutes }
-            : task
-        )
-      );
-
-      // Stop and clear timer
-      if (timerState?.taskId === taskToComplete.id) {
-        setTimerState(null);
-        saveTimerToStorage(null);
-        toast.info("Timer stopped. All tasks are now available.");
-      }
         prevTasks.map((task) =>
           task.id === taskToComplete.id
             ? { ...task, ...updates, actualDurationMinutes }
@@ -958,13 +735,11 @@ export function ClientTasksView({
     email,
     password,
     saveTimerToStorage,
-    saveTimerToStorage,
   ]);
 
   const handleCompletionCancel = useCallback(() => {
     setIsCompletionConfirmOpen(false);
     setTaskToComplete(null);
-    setCompletionLink(""); // Reset completion link
     setCompletionLink(""); // Reset completion link
   }, []);
 
@@ -1112,16 +887,7 @@ export function ClientTasksView({
         new Date(task.dueDate) < new Date() &&
         task.status !== "completed")
   ).length;
-  // Update the overdueCount calculation to be consistent
-  const overdueCount = tasks.filter(
-    (task) =>
-      task.status === "overdue" ||
-      (task.dueDate &&
-        new Date(task.dueDate) < new Date() &&
-        task.status !== "completed")
-  ).length;
 
-  // Effects
   // Effects
   useEffect(() => {
     fetchClientTasks();
@@ -1149,49 +915,7 @@ export function ClientTasksView({
   }, [tasks]);
 
   // Timer effect
-  // Timer effect
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    if (timerState?.isRunning) {
-      interval = setInterval(() => {
-        setTimerState((prev) => {
-          if (!prev || !prev.isRunning) return prev;
-
-          const newRemainingSeconds = prev.remainingSeconds - 1;
-          const updatedTimer = {
-            ...prev,
-            remainingSeconds: newRemainingSeconds,
-          };
-
-          if (newRemainingSeconds === 0) {
-            const task = tasks.find((t) => t.id === prev.taskId);
-            if (task && task.status === "in_progress") {
-              handleUpdateTask(prev.taskId, { status: "overdue" })
-                .then(() => {
-                  toast.warning(`Task "${task.name}" is now overdue!`, {
-                    description: "Timer has exceeded the ideal duration",
-                    duration: 4000,
-                  });
-                })
-                .catch(() => {
-                  console.error("[v0] Failed to update task status to overdue");
-                });
-            }
-          }
-
-          // Save to storage every 5 seconds or when going into overtime
-          if (newRemainingSeconds % 5 === 0 || newRemainingSeconds === 0) {
-            saveTimerToStorage(updatedTimer);
-          }
-
-          return updatedTimer;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
     let interval: NodeJS.Timeout | null = null;
 
     if (timerState?.isRunning) {
@@ -1235,54 +959,7 @@ export function ClientTasksView({
       if (interval) clearInterval(interval);
     };
   }, [timerState?.isRunning, saveTimerToStorage, tasks, handleUpdateTask]);
-  }, [timerState?.isRunning, saveTimerToStorage, tasks, handleUpdateTask]);
 
-  // Load timer on component mount
-  useEffect(() => {
-    if (tasks.length > 0) {
-      loadTimerFromStorage();
-    }
-  }, [tasks, loadTimerFromStorage]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Loading tasks...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-full w-fit mx-auto">
-            <Activity className="h-8 w-8 text-red-600 dark:text-red-400" />
-          </div>
-          <div className="space-y-2">
-            <p className="text-lg font-medium text-red-600 dark:text-red-400">
-              Error: {error}
-            </p>
-            <Button
-              onClick={fetchClientTasks}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Retry
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Add TaskTimer component
-  interface TaskTimerProps {
   // Load timer on component mount
   useEffect(() => {
     if (tasks.length > 0) {
@@ -1334,10 +1011,8 @@ export function ClientTasksView({
     onStartTimer: (taskId: string) => void;
     onPauseTimer: (taskId: string) => void;
     onResetTimer: (taskId: string) => void;
-    onResetTimer: (taskId: string) => void;
   }
 
-  function TaskTimer({
   function TaskTimer({
     task,
     timerState,
@@ -1358,18 +1033,12 @@ export function ClientTasksView({
     const remainingSeconds = isActive
       ? timerState.remainingSeconds
       : task.idealDurationMinutes * 60;
-    const remainingSeconds = isActive
-      ? timerState.remainingSeconds
-      : task.idealDurationMinutes * 60;
 
     const progress = isActive
       ? ((timerState.totalSeconds - timerState.remainingSeconds) /
           timerState.totalSeconds) *
-      ? ((timerState.totalSeconds - timerState.remainingSeconds) /
-          timerState.totalSeconds) *
         100
       : 0;
-    const isOvertime = remainingSeconds <= 0;
     const isOvertime = remainingSeconds <= 0;
     const displayTime = Math.abs(remainingSeconds);
 
@@ -1410,7 +1079,6 @@ export function ClientTasksView({
               className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/30"
               disabled={
                 task.status === "completed" || task.status === "cancelled"
-                task.status === "completed" || task.status === "cancelled"
               }
               title="Start timer"
             >
@@ -1425,20 +1093,6 @@ export function ClientTasksView({
               title="Pause timer"
             >
               <Pause className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            </Button>
-          )}
-          {isActive && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setTaskToComplete(task);
-                setIsCompletionConfirmOpen(true);
-              }}
-              className="h-8 w-8 p-0 hover:bg-emerald-100 dark:hover:bg-emerald-900/30"
-              title="Complete task"
-            >
-              <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </Button>
           )}
           {isActive && (
@@ -1471,13 +1125,8 @@ export function ClientTasksView({
   };
 
   // Small helper for performance badge
-  // Small helper for performance badge
   const getPerformanceBadge = (rating: Task["performanceRating"]) => {
     if (!rating) return <span className="text-sm text-gray-400">-</span>;
-    const map: Record<
-      NonNullable<Task["performanceRating"]>,
-      { label: string; cls: string }
-    > = {
     const map: Record<
       NonNullable<Task["performanceRating"]>,
       { label: string; cls: string }
@@ -1491,16 +1140,9 @@ export function ClientTasksView({
     } as any;
 
     const cls = (map as any)[rating] as string;
-    } as any;
-
-    const cls = (map as any)[rating] as string;
     return <Badge className={cls}>{rating}</Badge>;
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900/20 dark:to-indigo-900/20 p-4 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Enhanced Header */}
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900/20 dark:to-indigo-900/20 p-4 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -1541,7 +1183,6 @@ export function ClientTasksView({
         </div>
 
         {/* Stats Cards */}
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
@@ -1575,9 +1216,6 @@ export function ClientTasksView({
               <div className="text-3xl font-bold text-white">
                 {tasks.filter((task) => task.status === "completed").length}
               </div>
-              <p className="text-xs text-emerald-100 mt-1">
-                {/* {completionRate}% completion rate */}
-              </p>
               <p className="text-xs text-emerald-100 mt-1">
                 {/* {completionRate}% completion rate */}
               </p>
@@ -1631,7 +1269,6 @@ export function ClientTasksView({
             clientName={clientName}
           />
         )}
-        {/* Task Management Card */}
         {/* Task Management Card */}
         <Card className="border-0 shadow-xl bg-white dark:bg-gray-900 overflow-hidden">
           <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20">
@@ -1832,68 +1469,7 @@ export function ClientTasksView({
                           </td>
 
                           <td className="py-4 px-4">
-                      return (
-                        <tr
-                          key={task.id}
-                          className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${
-                            isSelected ? "bg-blue-50 dark:bg-blue-900/20" : ""
-                          }`}
-                        >
-                          <td className="py-4 px-4">
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  setSelectedTasks([...selectedTasks, task.id]);
-                                } else {
-                                  setSelectedTasks(
-                                    selectedTasks.filter((id) => id !== task.id)
-                                  );
-                                }
-                              }}
-                              disabled={task.status === "completed"}
-                              className={
-                                task.status === "completed"
-                                  ? "cursor-not-allowed opacity-50"
-                                  : ""
-                              }
-                            />
-                          </td>
-
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-3">
-                              <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-gray-50 text-sm">
-                                  {task.name}
-                                </h3>
-                                {task.comments && task.comments[0]?.text && (
-                                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate max-w-xs">
-                                    {task.comments[0].text}
-                                  </p>
-                                )}
-                              </div>
-                              {isTimerActive && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                                  <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                                    Active
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-
-                          <td className="py-4 px-4">
-                            {getStatusBadge(task.status)}
-                          </td>
-
-                          <td className="py-4 px-4">
                             {getPriorityBadge(task.priority)}
-                          </td>
-
-                          <td className="py-4 px-4">
-                            <Badge variant="outline" className="text-xs">
-                              {task.category?.name || "N/A"}
                           </td>
 
                           <td className="py-4 px-4">
@@ -1919,91 +1495,7 @@ export function ClientTasksView({
                               </span>
                             )}
                           </td>
-                          </td>
 
-                          <td className="py-4 px-4">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {task.templateSiteAsset?.name || "N/A"}
-                            </span>
-                          </td>
-
-                          <td className="py-4 px-4">
-                            {task.templateSiteAsset?.url ? (
-                              <span className="text-sm text-blue-600 dark:text-blue-400 font-mono break-all">
-                                {task.templateSiteAsset.url}
-                              </span>
-                            ) : (
-                              <span className="text-sm text-gray-400 dark:text-gray-500">
-                                N/A
-                              </span>
-                            )}
-                          </td>
-
-                          <td className="py-4 px-4">
-                            {getPerformanceBadge(task.performanceRating)}
-                          </td>
-
-                          <td className="py-4 px-4">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                              {typeof task.actualDurationMinutes === "number"
-                                ? task.actualDurationMinutes
-                                : "-"}
-                            </span>
-                          </td>
-
-                          <td className="py-4 px-4">
-                            <TaskTimer
-                              task={task}
-                              timerState={timerState}
-                              onStartTimer={handleStartTimer}
-                              onPauseTimer={handlePauseTimer}
-                              onResetTimer={handleResetTimer}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTasks.map((task) => {
-                  const isSelected = selectedTasks.includes(task.id);
-                  const isTimerActive =
-                    timerState?.taskId === task.id && timerState?.isRunning;
-                  const isThisTaskDisabled = isTaskDisabled(task.id);
-
-                  return (
-                    <div
-                      key={task.id}
-                      className={`group relative bg-white dark:bg-gray-800 rounded-2xl border transition-all duration-200 hover:shadow-lg ${
-                        isSelected
-                          ? "border-blue-500 shadow-lg ring-2 ring-blue-500/20"
-                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                      } ${isThisTaskDisabled ? "opacity-50" : ""}`}
-                    >
-                      <div className="p-6 space-y-4">
-                        <div className="flex items-center gap-4 w-full">
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedTasks([...selectedTasks, task.id]);
-                              } else {
-                                setSelectedTasks(
-                                  selectedTasks.filter((id) => id !== task.id)
-                                );
-                              }
-                            }}
-                            disabled={
-                              isThisTaskDisabled || task.status === "completed"
-                            }
-                            className={
-                              isThisTaskDisabled || task.status === "completed"
-                                ? "cursor-not-allowed"
-                                : ""
-                            }
                           <td className="py-4 px-4">
                             {getPerformanceBadge(task.performanceRating)}
                           </td>
@@ -2071,18 +1563,6 @@ export function ClientTasksView({
                             }
                           />
 
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-gray-900 dark:text-gray-50 text-lg truncate">
-                                {task.name}
-                              </h3>
-                              {isTimerActive && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                                  <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                                    Active
-                                  </span>
-                                </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-semibold text-gray-900 dark:text-gray-50 text-lg truncate">
@@ -2107,18 +1587,7 @@ export function ClientTasksView({
                               {getPerformanceBadge(task.performanceRating)}
                               {/* Duration */}
                               <Badge variant="outline" className="text-xs">
-                            <div className="flex flex-wrap items-center gap-2 mb-3">
-                              {getStatusBadge(task.status)}
-                              {getPriorityBadge(task.priority)}
-                              <Badge variant="outline" className="text-xs">
-                                {task.category?.name}
-                              </Badge>
-                              {/* Performance */}
-                              {getPerformanceBadge(task.performanceRating)}
-                              {/* Duration */}
-                              <Badge variant="outline" className="text-xs">
                                 {typeof task.actualDurationMinutes === "number"
-                                  ? `${task.actualDurationMinutes} min`
                                   ? `${task.actualDurationMinutes} min`
                                   : "-"}
                               </Badge>
@@ -2142,45 +1611,13 @@ export function ClientTasksView({
                               </div>
                             )}
                             {task.comments && (
-                              </Badge>
-                            </div>
-                            {task.templateSiteAsset?.name && (
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                <span className="font-medium">Asset:</span>{" "}
-                                {task.templateSiteAsset?.name}
-                              </p>
-                            )}
-                            {task.templateSiteAsset?.url && (
-                              <div className="mb-2">
-                                <div className="text-sm">
-                                  <span className="font-medium text-gray-700 dark:text-gray-300">
-                                    URL:
-                                  </span>
-                                  <span className="ml-2 text-blue-600 dark:text-blue-400 font-mono break-all">
-                                    {task.templateSiteAsset.url}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                            {task.comments && (
                               <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                                 {task.comments[0]?.text}
-                                {task.comments[0]?.text}
                               </p>
-                            )}
-                          </div>
                             )}
                           </div>
                         </div>
 
-                        <div className="w-full flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
-                          <TaskTimer
-                            task={task}
-                            timerState={timerState}
-                            onStartTimer={handleStartTimer}
-                            onPauseTimer={handlePauseTimer}
-                            onResetTimer={handleResetTimer}
-                          />
                         <div className="w-full flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                           <TaskTimer
                             task={task}
@@ -2211,20 +1648,6 @@ export function ClientTasksView({
                   </span>{" "}
                   tasks
                 </p>
-                {selectedTasks.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {selectedTasks.length} selected
-                    </span>
-                    <Button
-                      size="sm"
-                      onClick={() => setIsStatusModalOpen(true)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Update Status
-                    </Button>
-                  </div>
-                )}
                 {selectedTasks.length > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -2296,105 +1719,12 @@ export function ClientTasksView({
         </Dialog>
 
         {/* Completion Confirmation Modal */}
-        {/* Status Update Modal */}
-        <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-50">
-                Update Task Status
-              </DialogTitle>
-              <DialogDescription className="text-gray-600 dark:text-gray-400">
-                You have selected {selectedTasks.length} task
-                {selectedTasks.length !== 1 ? "s" : ""}. Choose the status to
-                apply to all selected tasks.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setIsStatusModalOpen(false)}
-                disabled={isUpdating}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleUpdateSelectedTasks("pending")}
-                disabled={isUpdating}
-                variant="secondary"
-                className="flex-1"
-              >
-                {isUpdating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Clock className="w-4 h-4 mr-2" />
-                )}
-                Mark as Pending
-              </Button>
-              <Button
-                onClick={() => handleUpdateSelectedTasks("completed")}
-                disabled={isUpdating}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-              >
-                {isUpdating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                )}
-                Mark as Completed
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Completion Confirmation Modal */}
         <Dialog
           open={isCompletionConfirmOpen}
           onOpenChange={setIsCompletionConfirmOpen}
         >
           <DialogContent className="sm:max-w-[500px]">
-          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-50">
-                Complete Task
-              </DialogTitle>
-              <DialogDescription className="text-gray-600 dark:text-gray-400">
-                Mark this task as completed and optionally provide a completion
-                link.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  <strong>Warning:</strong> Once marked as completed, you won't
-                  be able to edit this task anymore.
-                </p>
-              </div>
-
-              {taskToComplete && (
-                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-50">
-                    Task: {taskToComplete.name}
-                  </p>
-                  {timerState?.taskId === taskToComplete.id && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Current timer:{" "}
-                      {formatTimerDisplay(
-                        Math.abs(timerState.remainingSeconds)
-                      )}
-                      {timerState.remainingSeconds <= 0 && " (Overtime)"}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="completion-link"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  Completion Link
-                </label>
               <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-50">
                 Complete Task
               </DialogTitle>
@@ -2443,15 +1773,7 @@ export function ClientTasksView({
                   onChange={(e) => setCompletionLink(e.target.value)}
                   className="w-full"
                 />
-                  className="w-full"
-                />
 
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  Email
-                </label>
                 <label
                   htmlFor="email"
                   className="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -2460,9 +1782,7 @@ export function ClientTasksView({
                 </label>
                 <Input
                   id="email"
-                  id="email"
                   type="email"
-                  placeholder="example@gmail.com"
                   placeholder="example@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -2474,16 +1794,7 @@ export function ClientTasksView({
                 >
                   UserName
                 </label>
-                  className="w-full"
-                />
-                <label
-                  htmlFor="username"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  UserName
-                </label>
                 <Input
-                  id="username"
                   id="username"
                   type="text"
                   placeholder="username"
@@ -2497,30 +1808,14 @@ export function ClientTasksView({
                 >
                   Password
                 </label>
-                  className="w-full"
-                />
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  Password
-                </label>
                 <Input
-                  id="password"
-                  type="text"
-                  placeholder="Password"
                   id="password"
                   type="text"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
-                  className="w-full"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Provide a link to the completed work, deliverable, or proof of
-                  completion.
-                </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Provide a link to the completed work, deliverable, or proof of
                   completion.
@@ -2567,94 +1862,7 @@ export function ClientTasksView({
                   be able to edit these tasks anymore.
                 </p>
               </div>
-            </div>
-            <DialogFooter className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={handleCompletionCancel}
-                className="flex-1 bg-transparent"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleTaskCompletion}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Complete Task
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        {/* Bulk Task Completion Dialog */}
-        <Dialog
-          open={isBulkCompletionOpen}
-          onOpenChange={setIsBulkCompletionOpen}
-        >
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-50">
-                Complete Multiple Tasks
-              </DialogTitle>
-              <DialogDescription className="text-gray-600 dark:text-gray-400">
-                Mark {selectedTasks.length} selected tasks as completed and
-                optionally provide a completion link.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  <strong>Warning:</strong> Once marked as completed, you won't
-                  be able to edit these tasks anymore.
-                </p>
-              </div>
 
-              <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-50">
-                  Selected Tasks: {selectedTasks.length}
-                </p>
-                <div className="mt-2 max-h-32 overflow-y-auto">
-                  {selectedTasks.map((taskId) => {
-                    const task = tasks.find((t) => t.id === taskId);
-                    return task ? (
-                      <p
-                        key={taskId}
-                        className="text-xs text-gray-600 dark:text-gray-400"
-                      >
-                        • {task.name}
-                      </p>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="bulk-completion-link"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  Completion Link (Optional)
-                </label>
-                <Input
-                  id="bulk-completion-link"
-                  type="url"
-                  placeholder="https://example.com/completed-work"
-                  value={bulkCompletionLink}
-                  onChange={(e) => setBulkCompletionLink(e.target.value)}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  This link will be applied to all selected tasks. Provide a
-                  link to the completed work or deliverable.
-                </p>
-              </div>
-            </div>
-            <DialogFooter className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={handleBulkCompletionCancel}
-                className="flex-1 bg-transparent"
-              >
               <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-50">
                   Selected Tasks: {selectedTasks.length}
